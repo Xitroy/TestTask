@@ -26,9 +26,9 @@ public class Solver {
         return (6.0);
     }
 
-    public ArrayList<ArrayList> solve(ArrayList<ArrayList> rows){
+    public ArrayList<String[]> solve(ArrayList<String[]> rows){
         //TODO Пробежаться по каждой ячейке, классифицировать тип вычисления, вычислить, положить результат на место
-        ArrayList<ArrayList> solved = rows;
+        ArrayList<String[]> solved = rows;
         return solved;
     }
 }
