@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class CSVTransformer {
 
@@ -8,7 +9,7 @@ public class CSVTransformer {
     public CSVTransformer(String path) {
         // TODO Считать строки, каждую строку превратить в массив ячеек(строковых), положить все масивы в один большой
         ArrayList<String[]> list = new ArrayList<>();
-        File file = new File("file.txt");
+        File file = new File(path);
         BufferedReader reader = null;
         String text;
 
@@ -18,12 +19,13 @@ public class CSVTransformer {
                 list.add(text.split(";"));
             }
         }
-        catch (IOException e) { e.printStackTrace(); }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
         finally {
             try { if (reader != null) { reader.close(); } }
-            catch (IOException e){}
+            catch (IOException e){e.printStackTrace();}
         }
-
         transformed = list;
     }
 
