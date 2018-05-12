@@ -6,12 +6,13 @@ public class Main {
 //        put your path here
         String path = "";
 
-
+        // Превратим csv файл в массив из массивов строк
         CSVTransformer transformer = new CSVTransformer(path);
+        ArrayList<String[]> csvArr = transformer.getTransformed();
 
-        ArrayList<String[]> mock = transformer.getTransformed();
+        // Решим каждую ячейку
         Solver solver = new Solver();
-        mock = solver.solve(mock);
+        csvArr = solver.solve(csvArr);
 
     }
 }

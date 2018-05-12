@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 public class Solver {
 
-    private String classify(String cell){
+    public String classify(String cell){
         //TODO Решить вопрос вычислимости и некорректных значений ячейки
         //Пока считаем, что всё вычислимо, если нет проблем с файлом
         String type = "Arithmetic";
@@ -15,15 +15,102 @@ public class Solver {
         return type;
     }
 
-    private Double arithmetic(String cell){
-        //TODO вычисление строки с математическим выражением (читай ниже)
-        //http://www.cyberforum.ru/java-j2se/thread1088770.html
+    public Double arithmetic(String cell){
+        //Позаимствовано со stackoverflow
+        //https://stackoverflow.com/questions/3422673/evaluating-a-math-expression-given-in-string-form?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+        //Проверено тестами
+        return new Object() {
+            int pos = -1, ch;
+
+            void nextChar() {
+                ch = (++pos < cell.length()) ? cell.charAt(pos) : -1;
+            }
+
+            boolean eat(int charToEat) {
+                while (ch == ' ') nextChar();
+                if (ch == charToEat) {
+                    nextChar();
+                    return true;
+                }
+                return false;
+            }
+
+            double parse() {
+                nextChar();
+                double x = parseExpression();
+                if (pos < cell.length()) throw new RuntimeException("Unexpected: " + (char)ch);
+                return x;
+            }
+
+            // Grammar:
+            // expression = term | expression `+` term | expression `-` term
+            // term = factor | term `*` factor | term `/` factor
+            // factor = `+` factor | `-` factor | `(` expression `)`
+            //        | number | functionName factor | factor `^` factor
+
+            double parseExpression() {
+                double x = parseTerm();
+                for (;;) {
+                    if      (eat('+')) x += parseTerm(); // addition
+                    else if (eat('-')) x -= parseTerm(); // subtraction
+                    else return x;
+                }
+            }
+
+            double parseTerm() {
+                double x = parseFactor();
+                for (;;) {
+                    if      (eat('*')) x *= parseFactor(); // multiplication
+                    else if (eat('/')) x /= parseFactor(); // division
+                    else return x;
+                }
+            }
+
+            double parseFactor() {
+                if (eat('+')) return parseFactor(); // unary plus
+                if (eat('-')) return -parseFactor(); // unary minus
+
+                double x;
+                int startPos = this.pos;
+                if (eat('(')) { // parentheses
+                    x = parseExpression();
+                    eat(')');
+                } else if ((ch >= '0' && ch <= '9') || ch == '.') { // numbers
+                    while ((ch >= '0' && ch <= '9') || ch == '.') nextChar();
+                    x = Double.parseDouble(cell.substring(startPos, this.pos));
+                } else if (ch >= 'a' && ch <= 'z') { // functions
+                    while (ch >= 'a' && ch <= 'z') nextChar();
+                    String func = cell.substring(startPos, this.pos);
+                    x = parseFactor();
+                    if (func.equals("sqrt")) x = Math.sqrt(x);
+                    else if (func.equals("sin")) x = Math.sin(Math.toRadians(x));
+                    else if (func.equals("cos")) x = Math.cos(Math.toRadians(x));
+                    else if (func.equals("tan")) x = Math.tan(Math.toRadians(x));
+                    else throw new RuntimeException("Unknown function: " + func);
+                } else {
+                    throw new RuntimeException("Unexpected: " + (char)ch);
+                }
+
+                if (eat('^')) x = Math.pow(x, parseFactor()); // exponentiation
+
+                return x;
+            }
+        }.parse();
+    }
+
+    public Double Excel(String cell){
+        //TODO вычисление строки с экселевским выражением
         return (6.0);
     }
 
-    private Double Excel(String cell){
-        //TODO вычисление строки с экселевским выражением
-        return (6.0);
+    public ArrayList<Integer> dereference(String reference){
+        //Упрощенная версия excel выражения. Будем считать, что таблица конечная в длину
+        //И последняя колонка - это Z
+        //coord[0] -  номер строки, coord[1] -  номер столбца
+        ArrayList<Integer> coord = new ArrayList<>();
+        coord.add(0, Integer.parseInt(reference.substring(1)));
+        coord.add (1, reference.charAt(0)-'A');
+        return coord;
     }
 
     public ArrayList<String[]> solve(ArrayList<String[]> rows){
