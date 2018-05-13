@@ -15,7 +15,7 @@ public class Solver {
         return type;
     }
 
-    public Double arithmetic(String cell){
+    public static Double arithmetic(String cell){
         //Позаимствовано со stackoverflow
         //https://stackoverflow.com/questions/3422673/evaluating-a-math-expression-given-in-string-form?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
         //Проверено тестами
@@ -98,12 +98,24 @@ public class Solver {
         }.parse();
     }
 
-    public Double Excel(String cell){
+    public Double Excel(String cell, ArrayList<String[]> rows){
         //TODO вычисление строки с экселевским выражением
-        return (6.0);
+        //Вычленить ссылки
+        //Разыменовать все ссылки
+        //Подставить в исходную формулу
+        //Посчитать как обычное математическое выражение
+        //Предположим, что случай упрощённый и ссылка никогда не ссылается на клетку в которой есть другая ссылка
+        //s.split("[ \\+-/\\*\\(\\)]+"); - разбиватель по операциям
+        String[] operands = cell.split("[ \\+-/\\*\\(\\)]+");
+        for (int i = 0; i < operands.length; i++) {
+            ArrayList<Integer> coords = Solver.dereference(operands[i]);
+            String dereferenced = rows.get(coords.get(0))[coords.get(1)];
+            cell = cell.replaceAll(operands[i], dereferenced);
+        }
+        return (Solver.arithmetic(cell));
     }
 
-    public ArrayList<Integer> dereference(String reference){
+    public static ArrayList<Integer> dereference(String reference){
         //Упрощенная версия excel выражения. Будем считать, что таблица конечная в длину
         //И последняя колонка - это Z
         //coord[0] -  номер строки, coord[1] -  номер столбца
