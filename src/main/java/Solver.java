@@ -2,8 +2,9 @@ import java.util.ArrayList;
 
 public class Solver {
 
-    public String classify(String cell){
+    public static String classify(String cell){
         //TODO Решить вопрос вычислимости и некорректных значений ячейки
+        //TODO переназвать метод
         //Пока считаем, что всё вычислимо, если нет проблем с файлом
         String type = "Arithmetic";
         for (int i = 0; i < cell.length(); i++) {
@@ -108,9 +109,12 @@ public class Solver {
         //s.split("[ \\+-/\\*\\(\\)]+"); - разбиватель по операциям
         String[] operands = cell.split("[ \\+-/\\*\\(\\)]+");
         for (int i = 0; i < operands.length; i++) {
-            ArrayList<Integer> coords = Solver.dereference(operands[i]);
-            String dereferenced = rows.get(coords.get(0))[coords.get(1)];
-            cell = cell.replaceAll(operands[i], dereferenced);
+            // Если тут референс
+            if (Solver.classify(operands[i]).equals("Excel")){
+                ArrayList<Integer> coords = Solver.dereference(operands[i]);
+                String dereferenced = rows.get(coords.get(0))[coords.get(1)];
+                cell = cell.replaceAll(operands[i], dereferenced);
+            }
         }
         return (Solver.arithmetic(cell));
     }
