@@ -32,4 +32,15 @@ public class CSVTransformer {
     public ArrayList<String[]> getTransformed() {
         return transformed;
     }
+
+    public void printTransformed(ArrayList<String[]> transformed){
+        for (int i = 0; i < transformed.size(); i++) {
+            String[] row = transformed.get(i);
+            StringBuilder out = new StringBuilder();
+            for (int j = 0; j <row.length ; j++) {
+                out.append(row[j]).append(" ");
+            }
+            System.out.println(out);
+        }
+    }
 }

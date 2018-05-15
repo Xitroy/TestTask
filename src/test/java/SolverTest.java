@@ -40,8 +40,8 @@ public class SolverTest {
         csv.add(s1);
         csv.add(s2);
         csv.add(s3);
-        System.out.println(solver.Excel(csv.get(0)[2], csv));
-        System.out.println(solver.Excel(csv.get(1)[2], csv));
-        System.out.println(solver.Excel(csv.get(2)[2], csv));
+        System.out.println(Solver.Excel(csv.get(0)[2], csv));
+        System.out.println(Solver.Excel(csv.get(1)[2], csv));
+        System.out.println(Solver.Excel(csv.get(2)[2], csv));
     }
 }
