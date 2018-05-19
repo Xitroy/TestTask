@@ -3,16 +3,16 @@ import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
-//        put your path here
+        //Путь до файла, который нужно решить
         String path = "C:\\Users\\GID\\IdeaProjects\\test-task\\src\\test\\java\\testFile.csv";
 
         // Превратим csv файл в массив из массивов строк
-        CSVTransformer transformer = new CSVTransformer(path);
-        ArrayList<String[]> csvArr = transformer.getTransformed();
+        ArrayList<String[]> csvArr = CSVTransformer.CSVTransform(path);
 
         // Решим каждую ячейку
-        Solver solver = new Solver();
-        csvArr = solver.solve(csvArr);
-        transformer.printTransformed(csvArr);
+        csvArr = Solver.solve(csvArr);
+
+        //TODO write to the file
+        CSVTransformer.printTransformed(csvArr);
     }
 }

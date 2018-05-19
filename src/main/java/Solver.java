@@ -2,6 +2,14 @@ import java.util.ArrayList;
 
 public class Solver {
 
+    /**
+     * Example:
+     * classify("(6+10)/2") = "Arithmetic"
+     * classify("A0") = "Excel"
+     *
+     * @param cell to be classified
+     * @return is this cell excel-like or arithmetic-like expression
+     */
     public static String classify(String cell) {
         //TODO Решить вопрос вычислимости и некорректных значений ячейки
         //TODO переназвать метод
@@ -16,10 +24,16 @@ public class Solver {
         return type;
     }
 
+    /**
+     * Example:
+     * arithmetic("(6+10)/2") = 8
+     *
+     * @param cell to evaluate
+     * @return evaluated arithmetic expression as a double
+     */
     public static Double arithmetic(String cell) {
         //Позаимствовано со stackoverflow
         //https://stackoverflow.com/questions/3422673/evaluating-a-math-expression-given-in-string-form?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-        //Проверено тестами
         return new Object() {
             int pos = -1, ch;
 
@@ -99,6 +113,19 @@ public class Solver {
         }.parse();
     }
 
+    /**
+     * Example:
+     * rows = [
+     * [1;2;3]
+     * [4;5;A0*B0*C0]
+     * [7;8;9]
+     * ]
+     * Excel("A0*B0*C0", rows) = 6
+     *
+     * @param cell to evaluate
+     * @param rows array generated from CSV in order to find references
+     * @return evaluated Excel-like expression as a double
+     */
     public static Double Excel(String cell, ArrayList<String[]> rows) {
         //Вычленить ссылки
         //Разыменовать все ссылки
@@ -107,20 +134,29 @@ public class Solver {
         //Предположим, что случай упрощённый и ссылка никогда не ссылается на клетку в которой есть другая ссылка
         //s.split("[ \\+-/\\*\\(\\)]+"); - разбиватель по операциям
         String[] operands = cell.split("[ \\+-/\\*\\(\\)]+");
-        for (int i = 0; i < operands.length; i++) {
+        for (String operand : operands) {
             // Если тут референс
-            if (Solver.classify(operands[i]).equals("Excel")) {
-                ArrayList<Integer> coords = Solver.dereference(operands[i]);
+            if (Solver.classify(operand).equals("Excel")) {
+                ArrayList<Integer> coords = Solver.dereference(operand);
                 String dereferenced = rows.get(coords.get(0))[coords.get(1)];
-                cell = cell.replaceAll(operands[i], dereferenced);
+                cell = cell.replaceAll(operand, dereferenced);
             }
         }
         return (Solver.arithmetic(cell));
     }
 
+    /**
+     * Example:
+     * dereference(A0) = [0,0]
+     * dereference(C1) = [0,0]
+     *
+     * Assumption:
+     * The table has only A-Z columns
+     *
+     * @param reference in excel-like format
+     * @return coordinates in array
+     */
     public static ArrayList<Integer> dereference(String reference) {
-        //Упрощенная версия excel выражения. Будем считать, что таблица конечная в длину
-        //И последняя колонка - это Z
         //coord[0] -  номер строки, coord[1] -  номер столбца
         ArrayList<Integer> coord = new ArrayList<>();
         coord.add(0, Integer.parseInt(reference.substring(1)));
@@ -128,9 +164,26 @@ public class Solver {
         return coord;
     }
 
-    public ArrayList<String[]> solve(ArrayList<String[]> rows) {
+    /**
+     * Example:
+     * rows = [
+     * [1;2;3]
+     * [4;5;A0*B0*C0]
+     * [7;8;9]
+     * ]
+     * solve(rows) = [
+     * [1;2;3]
+     * [4;5;6]
+     * [7;8;9]
+     * ]
+     *
+     *
+     * @param rows array generated from CSV in order to find references
+     * @return array with solved cells
+     */
+    public static ArrayList<String[]> solve(ArrayList<String[]> rows) {
         //TODO Пробежаться по каждой ячейке, классифицировать тип вычисления, вычислить, положить результат на место
-        ArrayList<String[]> solved = new ArrayList<>();
+        ArrayList<String[]> solved;
         solved = rows;
         String[] row;
         for (int i = 0; i < rows.size(); i++) {
