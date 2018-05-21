@@ -88,6 +88,6 @@ public class SolverTest {
         //30;60;20.66666666666667
 
         csvArr = Solver.solve(csvArr);
-        CSVTransformer.printTransformed(csvArr);
+        CSVServant.printArray(csvArr);
     }
 }

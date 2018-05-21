@@ -7,13 +7,16 @@ public class Solver {
      * classify("(6+10)/2") = "Arithmetic"
      * classify("A0") = "Excel"
      *
+     * Assumption:
+     * There are only 2 possible types of cells
+     * Arithmetic and Excel-like.
+     * The difference between them is that Excel-like cells use characters inside
+     *
      * @param cell to be classified
      * @return is this cell excel-like or arithmetic-like expression
      */
     public static String classify(String cell) {
-        //TODO Решить вопрос вычислимости и некорректных значений ячейки
-        //TODO переназвать метод
-        //Пока считаем, что всё вычислимо, если нет проблем с файлом
+        //Считаем, что всё вычислимо, если нет проблем с файлом
         String type = "Arithmetic";
         for (int i = 0; i < cell.length(); i++) {
             if (Character.isLetter(cell.charAt(0))) {
@@ -122,6 +125,9 @@ public class Solver {
      * ]
      * Excel("A0*B0*C0", rows) = 6
      *
+     * Assumption:
+     * Never the case when reference to the cell with other references
+     *
      * @param cell to evaluate
      * @param rows array generated from CSV in order to find references
      * @return evaluated Excel-like expression as a double
@@ -134,11 +140,13 @@ public class Solver {
         //Предположим, что случай упрощённый и ссылка никогда не ссылается на клетку в которой есть другая ссылка
         //s.split("[ \\+-/\\*\\(\\)]+"); - разбиватель по операциям
         String[] operands = cell.split("[ \\+-/\\*\\(\\)]+");
+        ArrayList<Integer> coords;
+        String dereferenced;
         for (String operand : operands) {
             // Если тут референс
             if (Solver.classify(operand).equals("Excel")) {
-                ArrayList<Integer> coords = Solver.dereference(operand);
-                String dereferenced = rows.get(coords.get(0))[coords.get(1)];
+                coords = Solver.dereference(operand);
+                dereferenced = rows.get(coords.get(0))[coords.get(1)];
                 cell = cell.replaceAll(operand, dereferenced);
             }
         }
@@ -182,7 +190,6 @@ public class Solver {
      * @return array with solved cells
      */
     public static ArrayList<String[]> solve(ArrayList<String[]> rows) {
-        //TODO Пробежаться по каждой ячейке, классифицировать тип вычисления, вычислить, положить результат на место
         ArrayList<String[]> solved;
         solved = rows;
         String[] row;
