@@ -1,5 +1,11 @@
 import java.util.ArrayList;
 
+/**
+ * Description:
+ * Solves the problem described in README file
+ *
+ * (Solve the CSV file with arithmetic and Excel-like expressions)
+ */
 public class Main {
     public static void main(String[] args) {
         //Путь до файла, который нужно решить
@@ -11,7 +17,7 @@ public class Main {
         // Решим все ячейки
         csvArr = Solver.solve(csvArr);
 
-        // Вывод в консольку
+        // Вывод в консоль
         CSVServant.printArray(csvArr);
 
         // Запись в новый CSV

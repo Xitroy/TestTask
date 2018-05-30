@@ -13,6 +13,7 @@ public class SolverTest {
         assertEquals("Arithmetic", Solver.classify("3+9"));
         assertEquals("Excel", Solver.classify("A1"));
         assertEquals("Excel", Solver.classify("A3+6"));
+        assertEquals("Excel", Solver.classify("6+A3"));
     }
 
     @Test

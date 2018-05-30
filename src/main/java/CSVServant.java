@@ -1,13 +1,18 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class CSVServant {
 
     /**
+     * Description:
+     * Translates CSV file to ArrayList<String[]>
+     *
      * @param path to the file to be transformed to Arraylist of strings
      * @return csv file transformed to the ArrayList<String[]>. Helps to work with data
      */
@@ -33,6 +38,9 @@ public class CSVServant {
     }
 
     /**
+     * Description:
+     * Print ArrayList<String[]> into console
+     *
      * Advice:
      * Use it for print your solved result
      *
@@ -45,6 +53,9 @@ public class CSVServant {
     }
 
     /**
+     * Description:
+     * Translates ArrayList<String[]> to CSV file
+     *
      * @param csvArray to be wrote into file
      * @param path of file to be created
      */

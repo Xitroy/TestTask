@@ -3,23 +3,24 @@ import java.util.ArrayList;
 public class Solver {
 
     /**
+     * Description:
+     * Classify cell as an arithmetic or as Excel-like
+     * <p>
      * Example:
      * classify("(6+10)/2") = "Arithmetic"
      * classify("A0") = "Excel"
-     *
+     * <p>
      * Assumption:
-     * There are only 2 possible types of cells
-     * Arithmetic and Excel-like.
+     * There are only 2 possible types of cells: Arithmetic and Excel-like.
      * The difference between them is that Excel-like cells use characters inside
      *
      * @param cell to be classified
      * @return is this cell excel-like or arithmetic-like expression
      */
     public static String classify(String cell) {
-        //Считаем, что всё вычислимо, если нет проблем с файлом
         String type = "Arithmetic";
         for (int i = 0; i < cell.length(); i++) {
-            if (Character.isLetter(cell.charAt(0))) {
+            if (Character.isLetter(cell.charAt(i))) {
                 type = "Excel";
                 break;
             }
@@ -28,6 +29,9 @@ public class Solver {
     }
 
     /**
+     * Description:
+     * Evaluate arithmetic expression
+     * <p>
      * Example:
      * arithmetic("(6+10)/2") = 8
      *
@@ -35,7 +39,7 @@ public class Solver {
      * @return evaluated arithmetic expression as a double
      */
     public static Double arithmetic(String cell) {
-        //Позаимствовано со stackoverflow
+        //solution from
         //https://stackoverflow.com/questions/3422673/evaluating-a-math-expression-given-in-string-form?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
         return new Object() {
             int pos = -1, ch;
@@ -56,7 +60,9 @@ public class Solver {
             double parse() {
                 nextChar();
                 double x = parseExpression();
-                if (pos < cell.length()) throw new RuntimeException("Unexpected: " + (char) ch);
+                if (pos < cell.length()) {
+                    throw new RuntimeException("Unexpected: " + (char) ch);
+                }
                 return x;
             }
 
@@ -117,6 +123,9 @@ public class Solver {
     }
 
     /**
+     * Description:
+     * Evaluate excel-like expression
+     * <p>
      * Example:
      * rows = [
      * [1;2;3]
@@ -124,7 +133,7 @@ public class Solver {
      * [7;8;9]
      * ]
      * Excel("A0*B0*C0", rows) = 6
-     *
+     * <p>
      * Assumption:
      * Never the case when reference to the cell with other references
      *
@@ -133,17 +142,16 @@ public class Solver {
      * @return evaluated Excel-like expression as a double
      */
     public static Double Excel(String cell, ArrayList<String[]> rows) {
-        //Вычленить ссылки
-        //Разыменовать все ссылки
-        //Подставить в исходную формулу
-        //Посчитать как обычное математическое выражение
-        //Предположим, что случай упрощённый и ссылка никогда не ссылается на клетку в которой есть другая ссылка
-        //s.split("[ \\+-/\\*\\(\\)]+"); - разбиватель по операциям
+        //get all references
+        //dereference them
+        //put dereferenced numbers in string
+        //evaluate as an arithmetic string
+        //s.split("[ \\+-/\\*\\(\\)]+"); - split by math operands
         String[] operands = cell.split("[ \\+-/\\*\\(\\)]+");
         ArrayList<Integer> coords;
         String dereferenced;
         for (String operand : operands) {
-            // Если тут референс
+            // if there is a reference
             if (Solver.classify(operand).equals("Excel")) {
                 coords = Solver.dereference(operand);
                 dereferenced = rows.get(coords.get(0))[coords.get(1)];
@@ -154,10 +162,13 @@ public class Solver {
     }
 
     /**
+     * Description:
+     * dereference excel-like cell
+     * <p>
      * Example:
      * dereference(A0) = [0,0]
      * dereference(C1) = [0,0]
-     *
+     * <p>
      * Assumption:
      * The table has only A-Z columns
      *
@@ -165,7 +176,7 @@ public class Solver {
      * @return coordinates in array
      */
     public static ArrayList<Integer> dereference(String reference) {
-        //coord[0] -  номер строки, coord[1] -  номер столбца
+        //coord[0] -  string number, coord[1] -  column number
         ArrayList<Integer> coord = new ArrayList<>();
         coord.add(0, Integer.parseInt(reference.substring(1)));
         coord.add(1, reference.charAt(0) - 'A');
@@ -173,6 +184,9 @@ public class Solver {
     }
 
     /**
+     * Description:
+     * Solve ArrayList<String[]> with arithmetic and excel-like expressions
+     * <p>
      * Example:
      * rows = [
      * [1;2;3]
@@ -185,26 +199,22 @@ public class Solver {
      * [7;8;9]
      * ]
      *
-     *
      * @param rows array generated from CSV in order to find references
      * @return array with solved cells
      */
     public static ArrayList<String[]> solve(ArrayList<String[]> rows) {
-        ArrayList<String[]> solved;
-        solved = rows;
         String[] row;
         for (int i = 0; i < rows.size(); i++) {
             row = rows.get(i);
             for (int j = 0; j < row.length; j++) {
                 if (Solver.classify(row[j]).equals("Excel")) {
                     row[j] = String.valueOf(Solver.Excel(row[j], rows));
-                }
-                else {
+                } else {
                     row[j] = String.valueOf(Solver.arithmetic(row[j]));
                 }
             }
-            solved.set(i, row);
+            rows.set(i, row);
         }
-        return solved;
+        return rows;
     }
 }
